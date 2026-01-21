@@ -1,0 +1,42 @@
+{
+  "common": {
+    "home": "Home",
+    "services": "Services",
+    "about": "About",
+    "portfolio": "Portfolio",
+    "contact": "Contact",
+    "blog": "Blog",
+    "pricing": "Pricing",
+    "faqs": "FAQs",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "letsTalk": "Let's talk",
+    "readMore": "Read more",
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "footer": {
+    "description": "Modern web development studio delivering performant, scalable, and beautiful digital products.",
+    "services": "Services",
+    "company": "Company",
+    "resources": "Resources",
+    "social": "Social",
+    "copyright": "All rights reserved."
+  },
+  "home": {
+    "title": "Latest Articles",
+    "subtitle": "Insights, tutorials, and updates on web development, design, and technology."
+  },
+  "contact": {
+    "title": "Start a project with",
+    "subtitle": "Tell us about your goals and we'll follow up with a tailored plan and timeline. No sales fluff—just a clear path to shipping.",
+    "name": "Name",
+    "email": "Email",
+    "message": "Project details",
+    "sendMessage": "Send message",
+    "sending": "Sending...",
+    "success": "Thanks for reaching out! We'll respond within one business day."
+  }
+}

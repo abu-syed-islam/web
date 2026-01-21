@@ -33,38 +33,40 @@ export default function ClientLogosSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-6">
-          {clients.map((client, index) => (
-            <motion.div
-              key={client.name}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="flex items-center justify-center"
-            >
-              <div className="group relative flex h-20 w-full items-center justify-center rounded-lg border bg-card/50 p-4 transition hover:border-primary/40 hover:bg-card/80 hover:shadow-md">
-                {client.logo ? (
-                  <Image
-                    src={client.logo}
-                    alt={`${client.name} logo`}
-                    width={120}
-                    height={40}
-                    className="h-auto w-full object-contain opacity-60 transition-opacity group-hover:opacity-100"
-                  />
-                ) : (
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-muted-foreground transition-colors group-hover:text-primary">
-                      {client.placeholder}
+        <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]">
+          <div className="flex w-max animate-scroll-left group-hover:paused" style={{ '--animation-duration': '40s' }}>
+            {[...clients, ...clients].map((client, index) => (
+              <motion.div
+                key={`${client.name}-${index}`}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05, duration: 0.5 }}
+                className="flex items-center justify-center min-w-[180px] sm:min-w-[200px] lg:min-w-[240px] px-4"
+              >
+                <div className="group relative flex h-20 w-full items-center justify-center rounded-lg border bg-card/50 p-4 transition hover:border-primary/40 hover:bg-card/80 hover:shadow-md">
+                  {client.logo ? (
+                    <Image
+                      src={client.logo}
+                      alt={`${client.name} logo`}
+                      width={120}
+                      height={40}
+                      className="h-auto w-full object-contain opacity-60 transition-opacity group-hover:opacity-100"
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <div className="text-lg font-bold text-muted-foreground transition-colors group-hover:text-primary">
+                        {client.placeholder}
+                      </div>
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        {client.name}
+                      </div>
                     </div>
-                    <div className="mt-1 text-xs text-muted-foreground">
-                      {client.name}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          ))}
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

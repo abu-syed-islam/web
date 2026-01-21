@@ -74,6 +74,15 @@
   --tile: oklch(0.2 0.04 250);
 }
 
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
