@@ -49,13 +49,13 @@ export default function ServicesPreview({ services, showViewAll }: Props) {
               return (
                 <Card
                   key={service.id}
-                  className="group border-border/70 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
+                  className="group border-border/70 bg-card/80 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-premium"
                 >
                   <CardHeader className="space-y-4">
-                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                      <Icon className="h-5 w-5" />
+                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20 transition-all duration-300 group-hover:bg-primary/15 group-hover:ring-primary/30">
+                      <Icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
                     </span>
-                    <CardTitle className="text-xl">{service.title}</CardTitle>
+                    <CardTitle className="text-xl transition-colors duration-200 group-hover:text-primary">{service.title}</CardTitle>
                     <p className="text-sm text-muted-foreground">
                       {service.description}
                     </p>

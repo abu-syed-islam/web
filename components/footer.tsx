@@ -84,9 +84,10 @@ export function Footer() {
 										<li key={link.title}>
 											<a
 												href={link.href}
-												className="hover:text-foreground inline-flex items-center transition-all duration-300"
+												className="hover:text-foreground inline-flex items-center transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:rounded-md focus-visible:px-1"
+												aria-label={link.icon ? `${link.title} - Opens in new tab` : undefined}
 											>
-												{link.icon && <link.icon className="me-1 size-4" />}
+												{link.icon && <link.icon className="me-1 size-4" aria-hidden="true" />}
 												{link.title}
 											</a>
 										</li>

@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 export default function CTASection() {
   return (
     <section className="w-full px-6 pb-16">
-      <div className="mx-auto w-full max-w-6xl rounded-3xl border bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10 px-8 py-12 shadow-lg md:px-12 md:py-14">
+      <div className="mx-auto w-full max-w-6xl rounded-3xl border border-border/50 bg-gradient-to-r from-primary/10 via-primary/5 to-secondary/10 px-8 py-12 shadow-premium backdrop-blur-sm transition-all duration-300 hover:shadow-premium-lg hover:border-primary/30 md:px-12 md:py-14">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-3">
             <p className="text-sm font-semibold text-primary">Let&apos;s talk</p>
-            <h3 className="text-3xl font-semibold tracking-tight text-slate-900">
+            <h3 className="text-3xl font-semibold tracking-tight text-foreground">
               Build the next thing with {COMPANY_NAME}
             </h3>
             <p className="max-w-2xl text-muted-foreground">

@@ -23,12 +23,12 @@ export default function HeroSection() {
             <p className="text-lg text-muted-foreground">{SITE_DESCRIPTION}</p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg">
-                <Link href="/contact" className="flex items-center gap-2">
-                  Start a project <ArrowRight className="h-4 w-4" />
+                <Link href="/contact" className="flex items-center gap-2" aria-label="Start a new project">
+                  Start a project <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href="/portfolio">View portfolio</Link>
+                <Link href="/portfolio" aria-label="View our portfolio of projects">View portfolio</Link>
               </Button>
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -47,13 +47,13 @@ export default function HeroSection() {
           </div>
 
           <div className="relative">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/10 via-transparent to-secondary/20 blur-3xl" />
-            <div className="relative rounded-3xl border bg-card/80 p-6 shadow-xl backdrop-blur">
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/10 via-transparent to-secondary/20 blur-3xl animate-pulse" />
+            <div className="relative rounded-3xl border border-border/50 bg-card/80 p-6 shadow-premium backdrop-blur-md transition-all duration-300 hover:shadow-premium-lg hover:border-primary/30">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium text-muted-foreground">
                   Delivery snapshot
                 </p>
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary ring-1 ring-primary/20">
                   In progress
                 </span>
               </div>
@@ -65,12 +65,12 @@ export default function HeroSection() {
                 ].map((stat) => (
                   <div
                     key={stat.label}
-                    className="flex items-center justify-between rounded-xl border bg-muted/40 px-4 py-3"
+                    className="flex items-center justify-between rounded-xl border border-border/50 bg-muted/40 px-4 py-3 transition-all duration-200 hover:bg-muted/60 hover:border-primary/20"
                   >
                     <p className="text-sm text-muted-foreground">
                       {stat.label}
                     </p>
-                    <p className="font-semibold">{stat.value}</p>
+                    <p className="font-semibold text-foreground">{stat.value}</p>
                   </div>
                 ))}
               </div>

@@ -88,17 +88,17 @@ export default function TechStackSection() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                <Card className="group h-full border-border/70 bg-card/80 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
+                <Card className="group h-full border-border/70 bg-card/80 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-premium">
                   <CardContent className="p-6">
-                    <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                      <Icon className="h-6 w-6" />
+                    <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20 transition-all duration-300 group-hover:bg-primary/15 group-hover:ring-primary/30 group-hover:scale-110">
+                      <Icon className="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
                     </div>
-                    <h3 className="mb-4 text-lg font-semibold">{category.title}</h3>
+                    <h3 className="mb-4 text-lg font-semibold transition-colors duration-200 group-hover:text-primary">{category.title}</h3>
                     <ul className="space-y-2">
                       {category.technologies.map((tech) => (
                         <li
                           key={tech}
-                          className="text-sm text-muted-foreground before:content-['▹'] before:mr-2 before:text-primary"
+                          className="text-sm text-muted-foreground transition-colors duration-200 group-hover:text-foreground/90 before:content-['▹'] before:mr-2 before:text-primary"
                         >
                           {tech}
                         </li>

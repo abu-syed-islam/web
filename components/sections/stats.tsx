@@ -21,8 +21,9 @@ function AnimatedCounter({ value, suffix, prefix }: { value: number; suffix?: st
   const ref = useRef<HTMLSpanElement>(null);
   const motionValue = useMotionValue(0);
   const springValue = useSpring(motionValue, {
-    damping: 60,
-    stiffness: 100,
+    damping: 50,
+    stiffness: 120,
+    mass: 0.8,
   });
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
@@ -62,7 +63,7 @@ export default function StatsSection() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
+              transition={{ delay: index * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="text-center space-y-2"
             >
               <div className="text-4xl md:text-5xl font-bold text-transparent bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text">

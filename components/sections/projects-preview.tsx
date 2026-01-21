@@ -46,14 +46,14 @@ export default function ProjectsPreview({ projects, showViewAll }: Props) {
           <div className="grid gap-6 md:grid-cols-2">
             {projects.map((project) => (
               <Link key={project.id} href={`/portfolio/${project.id}`}>
-                <Card className="group overflow-hidden border-border/70 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg cursor-pointer h-full">
+                <Card className="group overflow-hidden border-border/70 bg-card/80 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-premium cursor-pointer h-full">
                   <div className="relative h-52 w-full overflow-hidden bg-muted">
                     {project.image_url ? (
                       <Image
                         src={project.image_url}
                         alt={project.title}
                         fill
-                        className="object-cover transition duration-500 group-hover:scale-105"
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
                         sizes="(min-width: 1024px) 50vw, 100vw"
                       />
                     ) : (
@@ -62,10 +62,10 @@ export default function ProjectsPreview({ projects, showViewAll }: Props) {
                         <span className="text-sm">Image coming soon</span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 transition group-hover:opacity-100" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                   </div>
                   <CardHeader>
-                    <CardTitle className="group-hover:text-primary transition-colors">
+                    <CardTitle className="group-hover:text-primary transition-colors duration-200">
                       {project.title}
                     </CardTitle>
                   </CardHeader>
@@ -73,8 +73,8 @@ export default function ProjectsPreview({ projects, showViewAll }: Props) {
                     <p className="text-sm text-muted-foreground">
                       {project.description}
                     </p>
-                    <div className="mt-4 flex items-center gap-2 text-sm text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                      View case study <ArrowUpRight className="h-4 w-4" />
+                    <div className="mt-4 flex items-center gap-2 text-sm font-medium text-primary opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1">
+                      View case study <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </div>
                   </CardContent>
                 </Card>

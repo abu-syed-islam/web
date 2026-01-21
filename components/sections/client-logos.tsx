@@ -44,7 +44,7 @@ export default function ClientLogosSection() {
                 transition={{ delay: index * 0.05, duration: 0.5 }}
                 className="flex items-center justify-center min-w-[180px] sm:min-w-[200px] lg:min-w-[240px] px-4"
               >
-                <div className="group relative flex h-20 w-full items-center justify-center rounded-lg border bg-card/50 p-4 transition hover:border-primary/40 hover:bg-card/80 hover:shadow-md">
+                <div className="group relative flex h-20 w-full items-center justify-center rounded-lg border border-border/50 bg-card/50 p-4 transition-all duration-300 hover:border-primary/40 hover:bg-card/80 hover:shadow-premium hover:scale-105">
                   {client.logo ? (
                     <Image
                       src={client.logo}

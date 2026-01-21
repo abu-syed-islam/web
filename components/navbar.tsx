@@ -64,11 +64,11 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full">
       {/* Premium glass effect with clean backdrop */}
-      <div className="absolute inset-0 bg-background/60 dark:bg-background/40 backdrop-blur-md backdrop-saturate-200 border-b border-border/40 dark:border-border/20">
+      <div className="absolute inset-0 bg-background/70 dark:bg-background/50 backdrop-blur-xl backdrop-saturate-150 border-b border-border/50 dark:border-border/30 shadow-sm">
         {/* Subtle glass reflection effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent dark:from-white/0" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/8 via-transparent to-transparent dark:from-white/2" />
         {/* Bottom border highlight for premium look */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
       </div>
 
       <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-4">
@@ -93,7 +93,7 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="group relative px-4 py-2 rounded-md transition-all duration-200 hover:text-foreground"
+              className="group relative px-4 py-2 rounded-md transition-all duration-200 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <span className="relative z-10">{link.label}</span>
               {/* Clean hover background effect */}

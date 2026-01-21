@@ -31,7 +31,7 @@ export default function AboutPage() {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6">
         <div className="space-y-3">
           <p className="text-sm font-semibold text-primary">About us</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
+          <h1 className="text-4xl font-semibold tracking-tight text-foreground">
             The product team behind {COMPANY_NAME}
           </h1>
           <p className="max-w-3xl text-lg text-muted-foreground">

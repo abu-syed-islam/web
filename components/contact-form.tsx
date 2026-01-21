@@ -36,7 +36,7 @@ export default function ContactForm() {
     <form
       ref={formRef}
       action={formAction}
-      className="space-y-6 rounded-2xl border bg-card/80 p-6 shadow-sm"
+      className="space-y-6 rounded-2xl border border-border/50 bg-card/80 p-6 shadow-premium transition-all duration-300 hover:shadow-premium-lg"
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
@@ -47,6 +47,7 @@ export default function ContactForm() {
             placeholder="Alex Morgan"
             required
             autoComplete="name"
+            className="transition-all duration-200 focus:ring-2 focus:ring-ring focus:ring-offset-2"
           />
         </div>
         <div className="space-y-2">
@@ -58,6 +59,7 @@ export default function ContactForm() {
             placeholder="you@company.com"
             required
             autoComplete="email"
+            className="transition-all duration-200 focus:ring-2 focus:ring-ring focus:ring-offset-2"
           />
         </div>
       </div>
@@ -70,6 +72,7 @@ export default function ContactForm() {
           placeholder="Tell us about your product, timeline, and goals."
           rows={5}
           required
+          className="transition-all duration-200 focus:ring-2 focus:ring-ring focus:ring-offset-2"
         />
       </div>
 

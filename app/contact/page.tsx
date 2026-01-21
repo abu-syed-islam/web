@@ -29,7 +29,7 @@ export default function ContactPage() {
         <div className="space-y-6">
           <div className="space-y-3">
             <p className="text-sm font-semibold text-primary">Contact</p>
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
+            <h1 className="text-4xl font-semibold tracking-tight text-foreground">
               Start a project with {COMPANY_NAME}
             </h1>
             <p className="text-lg text-muted-foreground">

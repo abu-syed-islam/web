@@ -47,7 +47,7 @@ export function ToggleTheme() {
 				<button
 					key={option.value}
 					className={cn(
-						'relative flex size-7 cursor-pointer items-center justify-center rounded-md transition-all',
+						'relative flex size-7 cursor-pointer items-center justify-center rounded-md transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
 						theme === option.value
 							? 'text-foreground'
 							: 'text-muted-foreground hover:text-foreground',

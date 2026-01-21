@@ -89,9 +89,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col bg-[radial-gradient(circle_at_10%_20%,rgba(59,130,246,0.08),transparent_25%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.08),transparent_25%)]">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          >
+            Skip to main content
+          </a>
+          <div className="relative flex min-h-screen flex-col bg-[radial-gradient(circle_at_10%_20%,rgba(59,130,246,0.08),transparent_25%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.08),transparent_25%)] dark:bg-[radial-gradient(circle_at_10%_20%,rgba(59,130,246,0.05),transparent_25%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.05),transparent_25%)]">
             <Navbar />
-            <main className="flex-1">{children}</main>
+            <main id="main-content" className="flex-1">{children}</main>
             <Footer />
           </div>
         </ThemeProvider>

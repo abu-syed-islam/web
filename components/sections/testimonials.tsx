@@ -100,7 +100,7 @@ export default function TestimonialsSection() {
         </div>
 
         <div className="relative">
-          <Card className="border-border/70 bg-card/80 shadow-lg">
+          <Card className="border-border/70 bg-card/80 shadow-premium transition-all duration-300 hover:shadow-premium-lg">
             <CardContent className="p-8 md:p-12">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -148,6 +148,7 @@ export default function TestimonialsSection() {
               size="icon"
               onClick={goToPrevious}
               aria-label="Previous testimonial"
+              className="transition-all duration-200 hover:scale-110"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -157,10 +158,10 @@ export default function TestimonialsSection() {
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}
-                  className={`h-2 rounded-full transition-all ${
+                  className={`h-2 rounded-full transition-all duration-300 ${
                     index === currentIndex
-                      ? 'w-8 bg-primary'
-                      : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                      ? 'w-8 bg-primary ring-2 ring-primary/20'
+                      : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50 hover:w-3'
                   }`}
                   aria-label={`Go to testimonial ${index + 1}`}
                 />
@@ -172,6 +173,7 @@ export default function TestimonialsSection() {
               size="icon"
               onClick={goToNext}
               aria-label="Next testimonial"
+              className="transition-all duration-200 hover:scale-110"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
