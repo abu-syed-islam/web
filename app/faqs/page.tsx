@@ -59,7 +59,7 @@ const faqs = [
     id: '10',
     question: 'How do we get started?',
     answer:
-      'Getting started is easy! Simply contact us through our contact form or schedule a free consultation call. We'll discuss your project, answer any questions, and provide a detailed proposal with timeline and pricing. No commitments required for the initial consultation.',
+      `Getting started is easy! Simply contact us through our contact form or schedule a free consultation call. We'll discuss your project, answer any questions, and provide a detailed proposal with timeline and pricing. No commitments required for the initial consultation.`,
   },
 ];
 

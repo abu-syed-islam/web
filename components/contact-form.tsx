@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useEffect, useRef, useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { submitContact, type ContactActionState } from "@/app/contact/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,7 @@ function SubmitButton() {
 
 export default function ContactForm() {
   const formRef = useRef<HTMLFormElement>(null);
-  const [state, formAction] = useFormState(submitContact, initialState);
+  const [state, formAction] = useActionState(submitContact, initialState);
 
   useEffect(() => {
     if (state.status === "success" && formRef.current) {
