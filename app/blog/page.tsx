@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, ArrowRight } from 'lucide-react';
+import { Calendar, ArrowRight, Eye } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getSupabaseClient } from '@/lib/supabase/client';
@@ -12,7 +12,7 @@ async function getBlogPosts() {
   const supabase = getSupabaseClient();
   const { data } = await supabase
     .from('blog_posts')
-    .select('id,slug,title,excerpt,author,published_at,category,image_url')
+    .select('id,slug,title,excerpt,author,published_at,category,image_url,view_count')
     .eq('status', 'published')
     .order('published_at', { ascending: false });
 
@@ -68,7 +68,7 @@ export default async function BlogPage() {
                   {post.excerpt}
                 </p>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 flex-wrap">
                     <span>{post.author}</span>
                     {post.published_at && (
                       <div className="flex items-center gap-1">
@@ -80,6 +80,12 @@ export default async function BlogPage() {
                             day: 'numeric',
                           })}
                         </time>
+                      </div>
+                    )}
+                    {post.view_count !== undefined && post.view_count > 0 && (
+                      <div className="flex items-center gap-1">
+                        <Eye className="h-3 w-3" />
+                        <span>{post.view_count.toLocaleString()}</span>
                       </div>
                     )}
                   </div>

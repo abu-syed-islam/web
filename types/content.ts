@@ -31,4 +31,5 @@ export type BlogPost = {
   image_url: string | null;
   status: string;
   created_at: string | null;
+  view_count?: number;
 };

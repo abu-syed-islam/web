@@ -29,6 +29,11 @@
     "title": "Latest Articles",
     "subtitle": "Insights, tutorials, and updates on web development, design, and technology."
   },
+  "blog": {
+    "views": "views",
+    "view": "view",
+    "popularPosts": "Popular Posts"
+  },
   "contact": {
     "title": "Start a project with",
     "subtitle": "Tell us about your goals and we'll follow up with a tailored plan and timeline. No sales fluff—just a clear path to shipping.",

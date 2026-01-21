@@ -2,13 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Calendar, ArrowLeft, User, Clock } from 'lucide-react';
+import { Calendar, ArrowLeft, User, Clock, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { getSupabaseClient } from '@/lib/supabase/client';
 import { BlogPostStructuredData } from '@/components/structured-data';
 import { RelatedPosts } from '@/components/blog/related-posts';
 import { SocialShare } from '@/components/blog/social-share';
+import { ViewTracker } from '@/components/blog/view-tracker';
 import { calculateReadingTime } from '@/lib/reading-time';
 import { COMPANY_NAME } from '@/constants/company';
 import type { BlogPost } from '@/types/content';
@@ -20,9 +21,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yoursite.com";
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }> | { slug: string };
 }): Promise<Metadata> {
-  const post = await getBlogPost(params.slug) as BlogPost | null;
+  const resolvedParams = await params;
+  const post = await getBlogPost(resolvedParams.slug) as BlogPost | null;
 
   if (!post) {
     return {
@@ -74,9 +76,14 @@ async function getAllBlogPosts() {
   return data ?? [];
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+export default async function BlogPostPage({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> | { slug: string };
+}) {
+  const resolvedParams = await params;
   const [post, allPosts] = await Promise.all([
-    getBlogPost(params.slug),
+    getBlogPost(resolvedParams.slug),
     getAllBlogPosts(),
   ]) as [BlogPost | null, BlogPost[]];
 
@@ -88,6 +95,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
   return (
     <>
+      <ViewTracker slug={post.slug} />
       {post.published_at && (
         <BlogPostStructuredData
           title={post.title}
@@ -139,6 +147,12 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 <Clock className="h-4 w-4" />
                 <span>{readingTime} min read</span>
               </div>
+              {post.view_count !== undefined && post.view_count !== null && (
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4" />
+                  <span>{(post.view_count || 0).toLocaleString()} views</span>
+                </div>
+              )}
             </div>
           </header>
 
