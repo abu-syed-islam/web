@@ -1,6 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/lib/supabase/client';
 
+// Helper function to extract IP address from request
+function getClientIP(request: NextRequest): string | null {
+  // Check various headers for IP address (handles proxies, load balancers, etc.)
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIP = request.headers.get('x-real-ip');
+  const cfConnectingIP = request.headers.get('cf-connecting-ip'); // Cloudflare
+  
+  if (forwarded) {
+    // x-forwarded-for can contain multiple IPs, take the first one
+    return forwarded.split(',')[0].trim();
+  }
+  
+  if (realIP) {
+    return realIP;
+  }
+  
+  if (cfConnectingIP) {
+    return cfConnectingIP;
+  }
+  
+  // Fallback to request IP (may not work in all environments)
+  return request.ip || null;
+}
+
+// Helper function to detect if request is from a bot
+function isBot(userAgent: string | null): boolean {
+  if (!userAgent) return false;
+  
+  const botPatterns = [
+    /bot/i,
+    /crawler/i,
+    /spider/i,
+    /scraper/i,
+    /curl/i,
+    /wget/i,
+    /python/i,
+    /java/i,
+    /go-http/i,
+    /httpie/i,
+    /postman/i,
+    /insomnia/i,
+  ];
+  
+  return botPatterns.some(pattern => pattern.test(userAgent));
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> | { slug: string } }
@@ -16,11 +62,27 @@ export async function POST(
       );
     }
 
+    // Extract IP address and user agent
+    const ipAddress = getClientIP(request);
+    const userAgent = request.headers.get('user-agent');
+
+    // Optional: Skip tracking for known bots (uncomment if desired)
+    // if (isBot(userAgent)) {
+    //   return NextResponse.json(
+    //     { error: 'Bot requests are not tracked' },
+    //     { status: 403 }
+    //   );
+    // }
+
     const supabase = getSupabaseClient();
 
-    // Use RPC function for atomic increment
+    // Use RPC function for atomic increment with IP-based rate limiting
     const { data: viewCount, error: rpcError } = await supabase
-      .rpc('increment_blog_post_views', { post_slug: slug });
+      .rpc('increment_blog_post_views', { 
+        post_slug_param: slug,
+        ip_address_param: ipAddress,
+        user_agent_param: userAgent,
+      });
 
     if (rpcError) {
       console.error('Error incrementing view count:', rpcError);
@@ -63,12 +125,12 @@ export async function POST(
     }
 
     // RPC returns 0 if no rows were updated (post not found or not published)
-    // Returns the new view_count if successful (which should be >= 1 after increment)
-    if (viewCount === null || viewCount === 0) {
+    // It also returns current count (without incrementing) if rate limited
+    if (viewCount === null) {
       // Check if post exists (might be draft or doesn't exist)
       const { data: post } = await supabase
         .from('blog_posts')
-        .select('id, status')
+        .select('id, status, view_count')
         .eq('slug', slug)
         .single();
 
@@ -85,10 +147,17 @@ export async function POST(
           { status: 404 }
         );
       }
+
+      // Return current count even if not incremented (rate limited or other issue)
+      return NextResponse.json({
+        success: true,
+        view_count: post.view_count || 0,
+        rate_limited: true, // Indicate that view was not counted
+      });
     }
 
-    // Successfully incremented - return the new count
-    // viewCount should be >= 1 after successful increment
+    // Successfully processed - return the count
+    // viewCount will be the current count (may be same if rate limited, or incremented if new view)
     return NextResponse.json({
       success: true,
       view_count: viewCount ?? 0,

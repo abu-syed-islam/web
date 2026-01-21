@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { Calendar, ArrowLeft, User, Clock, Eye } from 'lucide-react';
+import { Calendar, ArrowLeft, User, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { getSupabaseClient } from '@/lib/supabase/client';
@@ -10,6 +10,7 @@ import { BlogPostStructuredData } from '@/components/structured-data';
 import { RelatedPosts } from '@/components/blog/related-posts';
 import { SocialShare } from '@/components/blog/social-share';
 import { ViewTracker } from '@/components/blog/view-tracker';
+import { ViewCount } from '@/components/blog/view-count';
 import { calculateReadingTime } from '@/lib/reading-time';
 import { COMPANY_NAME } from '@/constants/company';
 import type { BlogPost } from '@/types/content';
@@ -148,10 +149,11 @@ export default async function BlogPostPage({
                 <span>{readingTime} min read</span>
               </div>
               {post.view_count !== undefined && post.view_count !== null && (
-                <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" />
-                  <span>{(post.view_count || 0).toLocaleString()} views</span>
-                </div>
+                <ViewCount
+                  initialCount={post.view_count || 0}
+                  slug={post.slug}
+                  className="text-sm text-muted-foreground"
+                />
               )}
             </div>
           </header>

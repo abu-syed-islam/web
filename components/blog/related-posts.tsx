@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import type { BlogPost } from "@/types/content";
@@ -36,8 +37,20 @@ export function RelatedPosts({
         {relatedPosts.map((post) => (
           <Card
             key={post.id}
-            className="group border-border/70 bg-card/80 transition hover:border-primary/40 hover:shadow-lg"
+            className="group overflow-hidden border-border/70 bg-card/80 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
           >
+            {post.image_url ? (
+              <div className="relative h-48 w-full overflow-hidden">
+                <Image
+                  src={post.image_url}
+                  alt={post.title}
+                  fill
+                  className="object-cover transition duration-500 group-hover:scale-105"
+                />
+              </div>
+            ) : (
+              <div className="h-48 w-full bg-gradient-to-br from-primary/10 to-secondary/10" />
+            )}
             <CardHeader>
               {post.category && (
                 <span className="mb-2 inline-block text-xs font-semibold text-primary">
