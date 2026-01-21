@@ -5,6 +5,7 @@ import { COMPANY_NAME, SITE_DESCRIPTION } from "@/constants/company";
 import Navbar from "@/components/navbar";
 import { Footer } from "@/components/ui/footer-section";
 import { ThemeProvider } from "@/components/theme-provider";
+import { OrganizationStructuredData, WebSiteStructuredData } from "@/components/structured-data";
 import React from "react";
 
 
@@ -18,17 +19,55 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yoursite.com";
+
 export const metadata: Metadata = {
-  title: COMPANY_NAME,
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: COMPANY_NAME,
+    template: `%s | ${COMPANY_NAME}`,
+  },
   description: SITE_DESCRIPTION,
+  keywords: ["web development", "Next.js", "React", "TypeScript", "web design", "SaaS development"],
+  authors: [{ name: COMPANY_NAME }],
+  creator: COMPANY_NAME,
   openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: COMPANY_NAME,
     title: COMPANY_NAME,
     description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: `${siteUrl}/logo.png`,
+        width: 1200,
+        height: 630,
+        alt: COMPANY_NAME,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: COMPANY_NAME,
     description: SITE_DESCRIPTION,
+    images: [`${siteUrl}/logo.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    // Add your verification codes here when available
+    // google: "your-google-verification-code",
+    // yandex: "your-yandex-verification-code",
   },
 };
 
@@ -42,6 +81,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
+        <OrganizationStructuredData />
+        <WebSiteStructuredData />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

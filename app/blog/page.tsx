@@ -3,76 +3,24 @@ import Image from 'next/image';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { getSupabaseClient } from '@/lib/supabase/client';
+import type { BlogPost } from '@/types/content';
 
-interface BlogPost {
-  slug: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  author: string;
-  image?: string;
-  category?: string;
+export const revalidate = 120;
+
+async function getBlogPosts() {
+  const supabase = getSupabaseClient();
+  const { data } = await supabase
+    .from('blog_posts')
+    .select('id,slug,title,excerpt,author,published_at,category,image_url')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false });
+
+  return data ?? [];
 }
 
-// Sample blog posts - in a real app, this would come from Supabase or CMS
-const blogPosts: BlogPost[] = [
-  {
-    slug: 'getting-started-with-nextjs',
-    title: 'Getting Started with Next.js 14: A Complete Guide',
-    excerpt:
-      'Learn how to build modern web applications with Next.js 14, including App Router, Server Components, and best practices.',
-    date: '2024-01-15',
-    author: 'Alex Morgan',
-    category: 'Development',
-  },
-  {
-    slug: 'web-design-trends-2024',
-    title: 'Web Design Trends to Watch in 2024',
-    excerpt:
-      'Explore the latest web design trends including dark mode, micro-interactions, and AI-powered user experiences.',
-    date: '2024-01-10',
-    author: 'Sarah Chen',
-    category: 'Design',
-  },
-  {
-    slug: 'optimizing-react-performance',
-    title: 'Optimizing React Performance: Tips and Tricks',
-    excerpt:
-      'Discover proven strategies to improve your React application performance, from code splitting to memoization.',
-    date: '2024-01-05',
-    author: 'Mike Johnson',
-    category: 'Development',
-  },
-  {
-    slug: 'building-accessible-websites',
-    title: 'Building Accessible Websites: A Developer\'s Guide',
-    excerpt:
-      'Learn how to create websites that are accessible to everyone, following WCAG guidelines and best practices.',
-    date: '2023-12-28',
-    author: 'Emily Davis',
-    category: 'Accessibility',
-  },
-  {
-    slug: 'cloud-deployment-strategies',
-    title: 'Cloud Deployment Strategies for Modern Apps',
-    excerpt:
-      'Compare different cloud deployment strategies and learn when to use serverless, containers, or traditional hosting.',
-    date: '2023-12-20',
-    author: 'Mike Johnson',
-    category: 'DevOps',
-  },
-  {
-    slug: 'css-modern-features',
-    title: 'Modern CSS Features You Should Know',
-    excerpt:
-      'Explore cutting-edge CSS features including container queries, :has() selector, and native nesting.',
-    date: '2023-12-15',
-    author: 'Sarah Chen',
-    category: 'Development',
-  },
-];
-
-export default function BlogPage() {
+export default async function BlogPage() {
+  const blogPosts = await getBlogPosts();
   return (
     <div className="pb-16 pt-12 md:pt-16">
       <div className="mx-auto w-full max-w-6xl px-6">
@@ -93,10 +41,10 @@ export default function BlogPage() {
               key={post.slug}
               className="group overflow-hidden border-border/70 bg-card/80 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
             >
-              {post.image ? (
+              {post.image_url ? (
                 <div className="relative h-48 w-full overflow-hidden">
                   <Image
-                    src={post.image}
+                    src={post.image_url}
                     alt={post.title}
                     fill
                     className="object-cover transition duration-500 group-hover:scale-105"
@@ -122,16 +70,18 @@ export default function BlogPage() {
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <div className="flex items-center gap-4">
                     <span>{post.author}</span>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      <time dateTime={post.date}>
-                        {new Date(post.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </time>
-                    </div>
+                    {post.published_at && (
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        <time dateTime={post.published_at}>
+                          {new Date(post.published_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })}
+                        </time>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <Button asChild variant="ghost" className="w-full group/btn">

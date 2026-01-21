@@ -1,4 +1,4 @@
-import ProjectsPreview from "@/components/sections/projects-preview";
+import { PortfolioClient } from "@/app/portfolio/portfolio-client";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import type { Project } from "@/types/content";
 
@@ -8,14 +8,31 @@ async function getProjects() {
   const supabase = getSupabaseClient();
   const { data } = await supabase
     .from("projects")
-    .select("id,title,description,image_url,created_at")
+    .select("id,title,description,image_url,created_at,category,tech_stack,live_url,github_url")
     .order("created_at", { ascending: false });
 
   return data ?? [];
 }
 
+async function getCategories() {
+  const supabase = getSupabaseClient();
+  const { data } = await supabase
+    .from("projects")
+    .select("category");
+
+  const categories = new Set<string>();
+  data?.forEach((project) => {
+    if (project.category) {
+      categories.add(project.category);
+    }
+  });
+
+  return Array.from(categories).sort();
+}
+
 export default async function PortfolioPage() {
   const projects = await getProjects();
+  const categories = await getCategories();
 
   return (
     <div className="space-y-6 pb-16 pt-12 md:pt-16">
@@ -30,7 +47,7 @@ export default async function PortfolioPage() {
         </p>
       </div>
 
-      <ProjectsPreview projects={projects as Project[]} />
+      <PortfolioClient projects={projects as Project[]} categories={categories} />
     </div>
   );
 }

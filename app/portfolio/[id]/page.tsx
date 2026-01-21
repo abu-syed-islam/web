@@ -157,7 +157,9 @@ export default async function ProjectDetailPage({
                     <p className="text-sm font-semibold text-foreground">
                       Category
                     </p>
-                    <p className="text-sm text-muted-foreground">Web Development</p>
+                    <p className="text-sm text-muted-foreground">
+                      {project.category || "Web Development"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground">
@@ -174,26 +176,48 @@ export default async function ProjectDetailPage({
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {['React', 'Next.js', 'TypeScript', 'Tailwind CSS'].map(
-                      (tech) => (
+                    {project.tech_stack && project.tech_stack.length > 0 ? (
+                      project.tech_stack.map((tech: string) => (
                         <span
                           key={tech}
                           className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
                         >
                           {tech}
                         </span>
-                      )
+                      ))
+                    ) : (
+                      <span className="text-sm text-muted-foreground">
+                        No technologies listed
+                      </span>
                     )}
                   </div>
                 </CardContent>
               </Card>
 
-              <Button asChild className="w-full" size="lg">
-                <Link href="/contact">
-                  Start Your Project
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+              <div className="flex flex-col gap-2">
+                {project.live_url && (
+                  <Button asChild variant="default" className="w-full" size="lg">
+                    <Link href={project.live_url} target="_blank" rel="noopener noreferrer">
+                      View Live Site
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                )}
+                {project.github_url && (
+                  <Button asChild variant="outline" className="w-full" size="lg">
+                    <Link href={project.github_url} target="_blank" rel="noopener noreferrer">
+                      View on GitHub
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                )}
+                <Button asChild variant={project.live_url || project.github_url ? "outline" : "default"} className="w-full" size="lg">
+                  <Link href="/contact">
+                    Start Your Project
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </article>

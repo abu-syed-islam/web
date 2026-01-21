@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { sendContactNotification } from "@/lib/email";
 
 export type ContactActionState = {
   status: "idle" | "success" | "error";
@@ -27,6 +28,15 @@ export async function submitContact(
     };
   }
 
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return {
+      status: "error",
+      message: "Please enter a valid email address.",
+    };
+  }
+
   const supabase = getSupabaseClient();
 
   const { error } = await supabase.from("contact_messages").insert({
@@ -43,10 +53,16 @@ export async function submitContact(
     };
   }
 
+  // Send email notifications (non-blocking)
+  sendContactNotification({ name, email, message }).catch((err) => {
+    console.error("Failed to send email notification", err);
+    // Don't fail the form submission if email fails
+  });
+
   revalidatePath("/contact");
 
   return {
     status: "success",
-    message: "Thanks for reaching out! We’ll respond within one business day.",
+    message: "Thanks for reaching out! We'll respond within one business day.",
   };
 }

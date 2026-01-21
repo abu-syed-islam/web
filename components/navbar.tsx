@@ -4,9 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { COMPANY_NAME } from "@/constants/company";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowUpRight, Menu, X, Search } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -18,8 +20,11 @@ const navLinks = [
 
 export default function Navbar() {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setMounted(true);
@@ -46,6 +51,15 @@ export default function Navbar() {
 
   // Use logo.png for dark theme, day-theam-logo.png for light theme
   const logoSrc = mounted && resolvedTheme === 'dark' ? '/logo.png' : '/day-theam-logo.png';
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full">
@@ -88,7 +102,31 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center gap-3">
+          <div className="relative">
+            {searchOpen ? (
+              <form onSubmit={handleSearch} className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-48"
+                  autoFocus
+                  onBlur={() => setTimeout(() => setSearchOpen(false), 200)}
+                />
+              </form>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSearchOpen(true)}
+                aria-label="Search"
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+            )}
+          </div>
           <Button 
             asChild
             className="group relative overflow-hidden transition-all duration-200 hover:opacity-90"
@@ -101,6 +139,14 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push("/search")}
+            aria-label="Search"
+          >
+            <Search className="h-5 w-5" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"

@@ -5,8 +5,11 @@ import { motion, useReducedMotion } from 'motion/react';
 import NextImage from 'next/image';
 import { FacebookIcon, InstagramIcon, LinkedinIcon, YoutubeIcon } from 'lucide-react';
 import { ToggleTheme } from './toggle-theme';
-import { SITE_DESCRIPTION } from '@/constants/company';
+import { SITE_DESCRIPTION, SOCIAL_MEDIA } from '@/constants/company';
 import { cn } from '@/lib/utils';
+import { getLocaleFromStorage, setLocaleInStorage, getMessages, getNestedTranslation } from '@/lib/i18n';
+import { NewsletterSignup } from '@/components/newsletter-signup';
+import type { Locale } from '@/types/i18n';
 
 interface FooterLink {
 	title: string;
@@ -26,7 +29,7 @@ const footerLinks: FooterSection[] = [
 			{ title: 'Our Services', href: '/services' },
 			{ title: 'Pricing', href: '/pricing' },
 			{ title: 'Portfolio', href: '/portfolio' },
-			{ title: 'Testimonials', href: '#testimonials' },
+			{ title: 'Testimonials', href: '/#testimonials' },
 		],
 	},
 	{
@@ -48,10 +51,10 @@ const footerLinks: FooterSection[] = [
 	{
 		label: 'Social',
 		links: [
-			{ title: 'Facebook', href: '#', icon: FacebookIcon },
-			{ title: 'Instagram', href: '#', icon: InstagramIcon },
-			{ title: 'Youtube', href: '#', icon: YoutubeIcon },
-			{ title: 'LinkedIn', href: '#', icon: LinkedinIcon },
+			{ title: 'Facebook', href: SOCIAL_MEDIA.facebook, icon: FacebookIcon },
+			{ title: 'Instagram', href: SOCIAL_MEDIA.instagram, icon: InstagramIcon },
+			{ title: 'Youtube', href: SOCIAL_MEDIA.youtube, icon: YoutubeIcon },
+			{ title: 'LinkedIn', href: SOCIAL_MEDIA.linkedin, icon: LinkedinIcon },
 		],
 	},
 ];
@@ -62,27 +65,50 @@ const LANGUAGE_OPTIONS = [
 ];
 
 export function Footer() {
-	const [selectedLanguage, setSelectedLanguage] = React.useState('en');
+	const [selectedLanguage, setSelectedLanguage] = React.useState<Locale>('en');
+	const [mounted, setMounted] = React.useState(false);
+
+	React.useEffect(() => {
+		setMounted(true);
+		setSelectedLanguage(getLocaleFromStorage());
+	}, []);
+
+	const handleLanguageChange = (locale: Locale) => {
+		setSelectedLanguage(locale);
+		setLocaleInStorage(locale);
+		// Trigger a custom event that other components can listen to
+		if (typeof window !== 'undefined') {
+			window.dispatchEvent(new CustomEvent('localechange', { detail: locale }));
+		}
+	};
+
+	const messages = mounted ? getMessages(selectedLanguage) : getMessages('en');
+	const description = getNestedTranslation(messages, 'footer.description');
 
 	return (
 		<footer className="md:rounded-t-6xl relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center rounded-t-4xl border-t bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)] px-6 py-12 lg:py-16">
 			<div className="bg-foreground/20 absolute top-0 right-1/2 left-1/2 h-px w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full blur" />
 
-			<div className="grid w-full gap-8 xl:grid-cols-3 xl:gap-8">
-				<AnimatedContainer className="space-y-4">
-					<NextImage 
-						src="/logo.png" 
-						alt="Flinkeo Logo" 
-						width={120} 
-						height={40}
-						className="h-8 w-auto"
-					/>
-					<p className="text-muted-foreground mt-4 text-sm leading-relaxed">
-						{SITE_DESCRIPTION}
-					</p>
-				</AnimatedContainer>
+			<div className="grid w-full gap-8 xl:grid-cols-[1.5fr_1fr] xl:gap-12">
+				<div className="space-y-6">
+					<AnimatedContainer className="space-y-4">
+						<NextImage 
+							src="/logo.png" 
+							alt="Flinkeo Logo" 
+							width={120} 
+							height={40}
+							className="h-8 w-auto"
+						/>
+						<p className="text-muted-foreground mt-4 text-sm leading-relaxed">
+							{mounted ? description : SITE_DESCRIPTION}
+						</p>
+					</AnimatedContainer>
+					<AnimatedContainer delay={0.2}>
+						<NewsletterSignup variant="compact" />
+					</AnimatedContainer>
+				</div>
 
-				<div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 xl:col-span-2 xl:mt-0">
+				<div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 xl:col-span-1 xl:mt-0">
 					{footerLinks.map((section, index) => (
 						<AnimatedContainer key={section.label} delay={0.1 + index * 0.1}>
 							<div className="mb-10 md:mb-0">
@@ -132,7 +158,7 @@ export function Footer() {
 								role="radio"
 								aria-checked={selectedLanguage === option.value}
 								aria-label={`Switch to ${option.label}`}
-								onClick={() => setSelectedLanguage(option.value)}
+								onClick={() => handleLanguageChange(option.value as Locale)}
 							>
 								{selectedLanguage === option.value && (
 									<motion.div

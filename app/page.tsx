@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import HeroSection from "@/components/sections/hero";
 import StatsSection from "@/components/sections/stats";
 import ServicesPreview from "@/components/sections/services-preview";
@@ -7,9 +8,23 @@ import ClientLogosSection from "@/components/sections/client-logos";
 import TestimonialsSection from "@/components/sections/testimonials";
 import CTASection from "@/components/sections/cta";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { COMPANY_NAME, SITE_DESCRIPTION } from "@/constants/company";
 import type { Project, Service } from "@/types/content";
 
 export const revalidate = 120;
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yoursite.com";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    title: COMPANY_NAME,
+    description: SITE_DESCRIPTION,
+    url: siteUrl,
+    images: [`${siteUrl}/logo.png`],
+  },
+};
 
 async function getHomeData() {
   const supabase = getSupabaseClient();
