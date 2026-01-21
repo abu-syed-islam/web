@@ -21,34 +21,32 @@ interface FooterSection {
 
 const footerLinks: FooterSection[] = [
 	{
-		label: 'Product',
+		label: 'Services',
 		links: [
-			{ title: 'Features', href: '#features' },
-			{ title: 'Pricing', href: '#pricing' },
+			{ title: 'Our Services', href: '/services' },
+			{ title: 'Pricing', href: '/pricing' },
+			{ title: 'Portfolio', href: '/portfolio' },
 			{ title: 'Testimonials', href: '#testimonials' },
-			{ title: 'Integration', href: '/' },
 		],
 	},
 	{
 		label: 'Company',
 		links: [
-			{ title: 'FAQs', href: '/faqs' },
 			{ title: 'About Us', href: '/about' },
+			{ title: 'FAQs', href: '/faqs' },
 			{ title: 'Privacy Policy', href: '/privacy' },
-			{ title: 'Terms of Services', href: '/terms' },
+			{ title: 'Terms of Service', href: '/terms' },
 		],
 	},
 	{
 		label: 'Resources',
 		links: [
 			{ title: 'Blog', href: '/blog' },
-			{ title: 'Changelog', href: '/changelog' },
-			{ title: 'Brand', href: '/brand' },
-			{ title: 'Help', href: '/help' },
+			{ title: 'Contact', href: '/contact' },
 		],
 	},
 	{
-		label: 'Social Links',
+		label: 'Social',
 		links: [
 			{ title: 'Facebook', href: '#', icon: FacebookIcon },
 			{ title: 'Instagram', href: '#', icon: InstagramIcon },

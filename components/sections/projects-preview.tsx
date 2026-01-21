@@ -45,36 +45,40 @@ export default function ProjectsPreview({ projects, showViewAll }: Props) {
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             {projects.map((project) => (
-              <Card
-                key={project.id}
-                className="group overflow-hidden border-border/70 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
-              >
-                <div className="relative h-52 w-full overflow-hidden bg-muted">
-                  {project.image_url ? (
-                    <Image
-                      src={project.image_url}
-                      alt={project.title}
-                      fill
-                      className="object-cover transition duration-500 group-hover:scale-105"
-                      sizes="(min-width: 1024px) 50vw, 100vw"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center gap-2 text-muted-foreground">
-                      <ImageOff className="h-5 w-5" />
-                      <span className="text-sm">Image coming soon</span>
+              <Link key={project.id} href={`/portfolio/${project.id}`}>
+                <Card className="group overflow-hidden border-border/70 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg cursor-pointer h-full">
+                  <div className="relative h-52 w-full overflow-hidden bg-muted">
+                    {project.image_url ? (
+                      <Image
+                        src={project.image_url}
+                        alt={project.title}
+                        fill
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                        sizes="(min-width: 1024px) 50vw, 100vw"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center gap-2 text-muted-foreground">
+                        <ImageOff className="h-5 w-5" />
+                        <span className="text-sm">Image coming soon</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 transition group-hover:opacity-100" />
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="group-hover:text-primary transition-colors">
+                      {project.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      {project.description}
+                    </p>
+                    <div className="mt-4 flex items-center gap-2 text-sm text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                      View case study <ArrowUpRight className="h-4 w-4" />
                     </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 transition group-hover:opacity-100" />
-                </div>
-                <CardHeader>
-                  <CardTitle>{project.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {project.description}
-                  </p>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         )}

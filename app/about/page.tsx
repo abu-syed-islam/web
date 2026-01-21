@@ -1,6 +1,8 @@
 import { BadgeCheck, Globe2, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { COMPANY_NAME } from "@/constants/company";
+import ProcessSection from "@/components/sections/process";
+import TeamSection from "@/components/sections/team";
 
 const pillars = [
   {
@@ -92,6 +94,10 @@ export default function AboutPage() {
             </CardContent>
           </Card>
         </div>
+
+        <ProcessSection />
+
+        <TeamSection />
       </div>
     </div>
   );

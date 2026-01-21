@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { COMPANY_NAME } from "@/constants/company";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -19,10 +19,30 @@ const navLinks = [
 export default function Navbar() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    const handleRouteChange = () => setMobileMenuOpen(false);
+    window.addEventListener('popstate', handleRouteChange);
+    return () => window.removeEventListener('popstate', handleRouteChange);
+  }, []);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
 
   // Use logo.png for dark theme, day-theam-logo.png for light theme
   const logoSrc = mounted && resolvedTheme === 'dark' ? '/logo.png' : '/day-theam-logo.png';
@@ -80,17 +100,71 @@ export default function Navbar() {
           </Button>
         </div>
 
-        <div className="block md:hidden">
-          <Button 
-            asChild 
-            size="sm" 
-            variant="outline"
-            className="transition-all duration-200 hover:opacity-90"
+        <div className="flex items-center gap-2 md:hidden">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="relative z-50"
+            aria-label="Toggle menu"
           >
-            <Link href="/contact">Contact</Link>
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </Button>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <nav className="fixed inset-y-0 right-0 z-40 w-full max-w-sm bg-background border-l shadow-xl md:hidden animate-in slide-in-from-right duration-300">
+            <div className="flex flex-col h-full">
+              <div className="flex items-center justify-between p-4 border-b">
+                <span className="text-lg font-semibold">Menu</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-label="Close menu"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+              <div className="p-4 border-t space-y-2">
+                <Button
+                  asChild
+                  className="w-full"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Link href="/contact" className="flex items-center justify-center gap-2">
+                    Let&apos;s talk
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </nav>
+        </>
+      )}
     </header>
   );
 }

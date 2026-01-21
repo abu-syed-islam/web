@@ -1,6 +1,10 @@
 import HeroSection from "@/components/sections/hero";
+import StatsSection from "@/components/sections/stats";
 import ServicesPreview from "@/components/sections/services-preview";
+import TechStackSection from "@/components/sections/tech-stack";
 import ProjectsPreview from "@/components/sections/projects-preview";
+import ClientLogosSection from "@/components/sections/client-logos";
+import TestimonialsSection from "@/components/sections/testimonials";
 import CTASection from "@/components/sections/cta";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import type { Project, Service } from "@/types/content";
@@ -35,8 +39,12 @@ export default async function HomePage() {
   return (
     <>
       <HeroSection />
+      <StatsSection />
       <ServicesPreview services={services as Service[]} showViewAll />
+      <TechStackSection />
       <ProjectsPreview projects={projects as Project[]} showViewAll />
+      <ClientLogosSection />
+      <TestimonialsSection />
       <CTASection />
     </>
   );
