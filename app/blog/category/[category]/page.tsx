@@ -5,15 +5,17 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getSupabaseClient } from '@/lib/supabase/client';
 import type { BlogPost } from '@/types/content';
+import { notFound } from 'next/navigation';
 
 export const revalidate = 120;
 
-async function getBlogPosts() {
+async function getBlogPostsByCategory(category: string) {
   const supabase = getSupabaseClient();
   const { data } = await supabase
     .from('blog_posts')
     .select('id,slug,title,excerpt,author,published_at,category,image_url,view_count')
     .eq('status', 'published')
+    .eq('category', category)
     .order('published_at', { ascending: false });
 
   return data ?? [];
@@ -36,46 +38,53 @@ async function getAllCategories() {
   return Array.from(categories).sort();
 }
 
-export default async function BlogPage() {
-  const [blogPosts, categories] = await Promise.all([
-    getBlogPosts(),
+export default async function BlogCategoryPage({
+  params,
+}: {
+  params: Promise<{ category: string }> | { category: string };
+}) {
+  const resolvedParams = await params;
+  const decodedCategory = decodeURIComponent(resolvedParams.category);
+  const [blogPosts, allCategories] = await Promise.all([
+    getBlogPostsByCategory(decodedCategory),
     getAllCategories(),
   ]);
-  
+
+  if (!allCategories.includes(decodedCategory)) {
+    notFound();
+  }
+
   return (
     <div className="pb-16 pt-12 md:pt-16">
       <div className="mx-auto w-full max-w-6xl px-6">
         <div className="mb-12 space-y-3">
           <p className="text-sm font-semibold text-primary">Blog</p>
           <h1 className="text-4xl font-semibold tracking-tight">
-            Latest Articles
+            {decodedCategory}
           </h1>
           <p className="max-w-2xl text-lg text-muted-foreground">
-            Insights, tutorials, and updates on web development, design, and
-            technology.
+            Articles in the {decodedCategory} category.
           </p>
         </div>
 
         {/* Category Filter */}
-        {categories.length > 0 && (
-          <div className="mb-8 flex flex-wrap gap-2">
-            {categories.map((cat) => (
-              <Button
-                key={cat}
-                asChild
-                variant="outline"
-                size="sm"
-              >
-                <Link href={`/blog/category/${encodeURIComponent(cat)}`}>
-                  {cat}
-                </Link>
-              </Button>
-            ))}
-            <Button asChild variant="outline" size="sm">
-              <Link href="/blog/archive">Archive</Link>
+        <div className="mb-8 flex flex-wrap gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/blog">All Posts</Link>
+          </Button>
+          {allCategories.map((cat) => (
+            <Button
+              key={cat}
+              asChild
+              variant={cat === decodedCategory ? 'default' : 'outline'}
+              size="sm"
+            >
+              <Link href={`/blog/category/${encodeURIComponent(cat)}`}>
+                {cat}
+              </Link>
             </Button>
-          </div>
-        )}
+          ))}
+        </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {blogPosts.map((post) => (
@@ -149,7 +158,7 @@ export default async function BlogPage() {
         {blogPosts.length === 0 && (
           <div className="rounded-2xl border border-dashed bg-muted/40 px-6 py-12 text-center">
             <p className="text-muted-foreground">
-              No blog posts available yet. Check back soon for updates!
+              No blog posts found in this category.
             </p>
           </div>
         )}

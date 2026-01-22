@@ -1,64 +1,46 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Github, Linkedin, Mail } from 'lucide-react';
+import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-
-interface TeamMember {
-  name: string;
-  role: string;
-  bio: string;
-  image?: string;
-  social?: {
-    github?: string;
-    linkedin?: string;
-    email?: string;
-  };
-}
-
-const teamMembers: TeamMember[] = [
-  {
-    name: 'Alex Morgan',
-    role: 'Lead Developer',
-    bio: 'Full-stack engineer with 10+ years of experience building scalable web applications. Passionate about clean code and modern technologies.',
-    social: {
-      github: '#',
-      linkedin: '#',
-      email: 'alex@example.com',
-    },
-  },
-  {
-    name: 'Sarah Chen',
-    role: 'UX Designer',
-    bio: 'Creative designer focused on creating intuitive user experiences. Specializes in design systems and accessibility.',
-    social: {
-      github: '#',
-      linkedin: '#',
-      email: 'sarah@example.com',
-    },
-  },
-  {
-    name: 'Mike Johnson',
-    role: 'DevOps Engineer',
-    bio: 'Cloud infrastructure expert with deep knowledge in AWS, containerization, and CI/CD pipelines. Ensures reliable and scalable deployments.',
-    social: {
-      github: '#',
-      linkedin: '#',
-      email: 'mike@example.com',
-    },
-  },
-  {
-    name: 'Emily Davis',
-    role: 'Project Manager',
-    bio: 'Experienced project manager who ensures smooth delivery and communication. Bridges the gap between technical teams and clients.',
-    social: {
-      linkedin: '#',
-      email: 'emily@example.com',
-    },
-  },
-];
+import { getSupabaseClient } from '@/lib/supabase/client';
+import type { TeamMember } from '@/types/content';
 
 export default function TeamSection() {
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTeamMembers() {
+      try {
+        const supabase = getSupabaseClient();
+        const { data, error } = await supabase
+          .from('team')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true });
+
+        if (!error && data) {
+          setTeamMembers(data as TeamMember[]);
+        }
+      } catch (error) {
+        console.error('Error fetching team members:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchTeamMembers();
+  }, []);
+  if (isLoading) {
+    return null;
+  }
+
+  if (teamMembers.length === 0) {
+    return null;
+  }
+
   return (
     <section className="w-full px-6 py-12 md:py-16">
       <div className="mx-auto w-full max-w-6xl">
@@ -85,12 +67,22 @@ export default function TeamSection() {
               <Card className="group h-full border-border/70 bg-card/80 text-center transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
                 <CardContent className="p-6">
                   <div className="mb-4 flex justify-center">
-                    <div className="h-24 w-24 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-2xl font-bold text-primary">
-                      {member.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')}
-                    </div>
+                    {member.image_url ? (
+                      <div className="relative h-24 w-24 rounded-full overflow-hidden">
+                        <img
+                          src={member.image_url}
+                          alt={member.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-24 w-24 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-2xl font-bold text-primary">
+                        {member.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')}
+                      </div>
+                    )}
                   </div>
                   <h3 className="mb-1 text-lg font-semibold">{member.name}</h3>
                   <p className="mb-4 text-sm text-primary font-medium">
@@ -99,11 +91,11 @@ export default function TeamSection() {
                   <p className="mb-4 text-sm text-muted-foreground">
                     {member.bio}
                   </p>
-                  {member.social && (
+                  {(member.github_url || member.linkedin_url || member.email || member.twitter_url) && (
                     <div className="flex items-center justify-center gap-3">
-                      {member.social.github && (
+                      {member.github_url && (
                         <a
-                          href={member.social.github}
+                          href={member.github_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-muted-foreground hover:text-foreground transition-colors"
@@ -112,9 +104,9 @@ export default function TeamSection() {
                           <Github className="h-5 w-5" />
                         </a>
                       )}
-                      {member.social.linkedin && (
+                      {member.linkedin_url && (
                         <a
-                          href={member.social.linkedin}
+                          href={member.linkedin_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-muted-foreground hover:text-foreground transition-colors"
@@ -123,9 +115,20 @@ export default function TeamSection() {
                           <Linkedin className="h-5 w-5" />
                         </a>
                       )}
-                      {member.social.email && (
+                      {member.twitter_url && (
                         <a
-                          href={`mailto:${member.social.email}`}
+                          href={member.twitter_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-muted-foreground hover:text-foreground transition-colors"
+                          aria-label={`${member.name}'s Twitter`}
+                        >
+                          <Twitter className="h-5 w-5" />
+                        </a>
+                      )}
+                      {member.email && (
+                        <a
+                          href={`mailto:${member.email}`}
                           className="text-muted-foreground hover:text-foreground transition-colors"
                           aria-label={`Email ${member.name}`}
                         >

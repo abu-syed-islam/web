@@ -1,0 +1,152 @@
+import Link from 'next/link';
+import Image from 'next/image';
+import { Calendar, ArrowRight, Eye } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { getSupabaseClient } from '@/lib/supabase/client';
+import type { BlogPost } from '@/types/content';
+
+export const revalidate = 120;
+
+async function getAllBlogPosts() {
+  const supabase = getSupabaseClient();
+  const { data } = await supabase
+    .from('blog_posts')
+    .select('id,slug,title,excerpt,author,published_at,category,image_url,view_count')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false });
+
+  return data ?? [];
+}
+
+export default async function BlogArchivePage() {
+  const blogPosts = await getAllBlogPosts();
+
+  // Group posts by year and month
+  const postsByDate: Record<string, Record<string, BlogPost[]>> = {};
+  
+  blogPosts.forEach((post) => {
+    if (!post.published_at) return;
+    
+    const date = new Date(post.published_at);
+    const year = date.getFullYear().toString();
+    const month = date.toLocaleDateString('en-US', { month: 'long' });
+    
+    if (!postsByDate[year]) {
+      postsByDate[year] = {};
+    }
+    if (!postsByDate[year][month]) {
+      postsByDate[year][month] = [];
+    }
+    postsByDate[year][month].push(post);
+  });
+
+  const years = Object.keys(postsByDate).sort((a, b) => parseInt(b) - parseInt(a));
+
+  return (
+    <div className="pb-16 pt-12 md:pt-16">
+      <div className="mx-auto w-full max-w-6xl px-6">
+        <div className="mb-12 space-y-3">
+          <p className="text-sm font-semibold text-primary">Blog Archive</p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Archive
+          </h1>
+          <p className="max-w-2xl text-lg text-muted-foreground">
+            Browse all blog posts organized by date.
+          </p>
+        </div>
+
+        <div className="space-y-12">
+          {years.map((year) => (
+            <div key={year} className="space-y-6">
+              <h2 className="text-2xl font-semibold">{year}</h2>
+              {Object.entries(postsByDate[year])
+                .sort(([monthA], [monthB]) => {
+                  const months = [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                  ];
+                  return months.indexOf(monthB) - months.indexOf(monthA);
+                })
+                .map(([month, posts]) => (
+                  <div key={month} className="space-y-4">
+                    <h3 className="text-xl font-medium text-muted-foreground">{month}</h3>
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                      {posts.map((post) => (
+                        <Card
+                          key={post.slug}
+                          className="group overflow-hidden border-border/70 bg-card/80 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
+                        >
+                          {post.image_url ? (
+                            <div className="relative h-48 w-full overflow-hidden">
+                              <Image
+                                src={post.image_url}
+                                alt={post.title}
+                                fill
+                                className="object-cover transition duration-500 group-hover:scale-105"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-48 w-full bg-gradient-to-br from-primary/10 to-secondary/10" />
+                          )}
+                          <CardHeader>
+                            {post.category && (
+                              <span className="mb-2 inline-block text-xs font-semibold text-primary">
+                                {post.category}
+                              </span>
+                            )}
+                            <h4 className="text-lg font-semibold leading-tight">
+                              {post.title}
+                            </h4>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {post.excerpt}
+                            </p>
+                            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-3 w-3" />
+                                <time dateTime={post.published_at || ''}>
+                                  {post.published_at && new Date(post.published_at).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                  })}
+                                </time>
+                              </div>
+                              {post.view_count !== undefined && post.view_count > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <Eye className="h-3 w-3" />
+                                  <span>{post.view_count.toLocaleString()}</span>
+                                </div>
+                              )}
+                            </div>
+                            <Button asChild variant="ghost" className="w-full group/btn">
+                              <Link
+                                href={`/blog/${post.slug}`}
+                                className="flex items-center justify-center gap-2"
+                              >
+                                Read more
+                                <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                              </Link>
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          ))}
+        </div>
+
+        {years.length === 0 && (
+          <div className="rounded-2xl border border-dashed bg-muted/40 px-6 py-12 text-center">
+            <p className="text-muted-foreground">
+              No blog posts available yet.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

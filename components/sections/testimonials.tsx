@@ -5,83 +5,88 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-
-interface Testimonial {
-  id: string;
-  name: string;
-  role: string;
-  company: string;
-  content: string;
-  rating?: number;
-}
-
-const testimonials: Testimonial[] = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    role: 'CEO',
-    company: 'TechStart Inc.',
-    content:
-      'Working with Flinkeo transformed our online presence. Their team delivered a beautiful, performant website that exceeded our expectations. The attention to detail and communication throughout the project was exceptional.',
-    rating: 5,
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    role: 'Product Manager',
-    company: 'InnovateLabs',
-    content:
-      'The development team at Flinkeo is incredibly skilled. They built our web application quickly without compromising on quality. The codebase is clean, well-documented, and maintainable.',
-    rating: 5,
-  },
-  {
-    id: '3',
-    name: 'Emily Rodriguez',
-    role: 'Founder',
-    company: 'GreenTech Solutions',
-    content:
-      'Flinkeo helped us launch our e-commerce platform ahead of schedule. Their expertise in modern web technologies and user experience design is evident in every aspect of the final product.',
-    rating: 5,
-  },
-  {
-    id: '4',
-    name: 'David Park',
-    role: 'CTO',
-    company: 'DataFlow Systems',
-    content:
-      'We needed a complex dashboard with real-time data visualization. Flinkeo delivered a robust solution that our team and clients love. Their ongoing support has been invaluable.',
-    rating: 5,
-  },
-];
+import { getSupabaseClient } from '@/lib/supabase/client';
+import type { Testimonial } from '@/types/content';
 
 export default function TestimonialsSection() {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    async function fetchTestimonials() {
+      try {
+        const supabase = getSupabaseClient();
+        const { data, error } = await supabase
+          .from('testimonials')
+          .select('*')
+          .eq('featured', true)
+          .order('display_order', { ascending: true })
+          .limit(10);
+
+        if (!error && data) {
+          setTestimonials(data as Testimonial[]);
+          // Reset currentIndex when testimonials are loaded
+          setCurrentIndex(0);
+        } else {
+          setTestimonials([]);
+          setCurrentIndex(0);
+        }
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+        setTestimonials([]);
+        setCurrentIndex(0);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchTestimonials();
+  }, []);
+
+  // Ensure currentIndex is always valid when testimonials change
+  useEffect(() => {
+    if (testimonials.length > 0 && currentIndex >= testimonials.length) {
+      setCurrentIndex(0);
+    }
+  }, [testimonials.length, currentIndex]);
+
+  useEffect(() => {
+    if (!isAutoPlaying || testimonials.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, testimonials.length]);
 
   const goToPrevious = () => {
+    if (testimonials.length === 0) return;
     setIsAutoPlaying(false);
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
   const goToNext = () => {
+    if (testimonials.length === 0) return;
     setIsAutoPlaying(false);
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
   };
 
   const goToSlide = (index: number) => {
+    if (testimonials.length === 0) return;
     setIsAutoPlaying(false);
-    setCurrentIndex(index);
+    setCurrentIndex(Math.max(0, Math.min(index, testimonials.length - 1)));
   };
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (testimonials.length === 0) {
+    return null;
+  }
 
   const currentTestimonial = testimonials[currentIndex];
 

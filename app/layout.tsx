@@ -7,6 +7,7 @@ import { Footer } from "@/components/ui/footer-section";
 import { ThemeProvider } from "@/components/theme-provider";
 import { OrganizationStructuredData, WebSiteStructuredData } from "@/components/structured-data";
 import { ConditionalNavbarFooter } from "@/components/conditional-navbar-footer";
+import { CookieConsent } from "@/components/cookie-consent";
 import React from "react";
 
 
@@ -99,6 +100,7 @@ export default function RootLayout({
           <ConditionalNavbarFooter navbar={<Navbar />} footer={<Footer />}>
             <main id="main-content" className="flex-1">{children}</main>
           </ConditionalNavbarFooter>
+          <CookieConsent />
         </ThemeProvider>
       </body>
     </html>

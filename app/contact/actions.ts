@@ -39,10 +39,12 @@ export async function submitContact(
 
   const supabase = getSupabaseClient();
 
-  const { error } = await supabase.from("contact_messages").insert({
+  const { error } = await supabase.from("leads").insert({
     name,
     email,
     message,
+    status: 'new',
+    source: 'contact_form',
   });
 
   if (error) {
