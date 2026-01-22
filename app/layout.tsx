@@ -6,6 +6,7 @@ import Navbar from "@/components/navbar";
 import { Footer } from "@/components/ui/footer-section";
 import { ThemeProvider } from "@/components/theme-provider";
 import { OrganizationStructuredData, WebSiteStructuredData } from "@/components/structured-data";
+import { ConditionalNavbarFooter } from "@/components/conditional-navbar-footer";
 import React from "react";
 
 
@@ -95,11 +96,9 @@ export default function RootLayout({
           >
             Skip to main content
           </a>
-          <div className="relative flex min-h-screen flex-col bg-[radial-gradient(circle_at_10%_20%,rgba(59,130,246,0.08),transparent_25%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.08),transparent_25%)] dark:bg-[radial-gradient(circle_at_10%_20%,rgba(59,130,246,0.05),transparent_25%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.05),transparent_25%)]">
-            <Navbar />
+          <ConditionalNavbarFooter navbar={<Navbar />} footer={<Footer />}>
             <main id="main-content" className="flex-1">{children}</main>
-            <Footer />
-          </div>
+          </ConditionalNavbarFooter>
         </ThemeProvider>
       </body>
     </html>

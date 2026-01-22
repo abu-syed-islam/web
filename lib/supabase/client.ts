@@ -4,6 +4,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 let supabase: SupabaseClient | null = null;
+let supabaseAdmin: SupabaseClient | null = null;
 
 function ensureSupabaseEnv() {
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -13,6 +14,7 @@ function ensureSupabaseEnv() {
   }
 }
 
+// Public client for general API access (no session persistence)
 export function getSupabaseClient(): SupabaseClient {
   ensureSupabaseEnv();
 
@@ -25,4 +27,35 @@ export function getSupabaseClient(): SupabaseClient {
   }
 
   return supabase;
+}
+
+// Admin client with session persistence for authenticated users
+export function getSupabaseAdminClient(): SupabaseClient {
+  ensureSupabaseEnv();
+
+  if (typeof window === 'undefined') {
+    // Server-side: create new client each time with cookie support
+    // Note: Cookies are automatically handled by Next.js
+    return createClient(supabaseUrl!, supabaseAnonKey!, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    });
+  }
+
+  // Client-side: reuse singleton with session persistence
+  if (!supabaseAdmin) {
+    supabaseAdmin = createClient(supabaseUrl!, supabaseAnonKey!, {
+      auth: {
+        persistSession: true,
+        storage: window.localStorage,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    });
+  }
+
+  return supabaseAdmin;
 }
