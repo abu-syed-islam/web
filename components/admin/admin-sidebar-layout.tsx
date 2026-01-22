@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
+import { Sidebar, SidebarBody, SidebarLink, useSidebar } from '@/components/ui/sidebar';
 import { LayoutDashboard, FileText, Home, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils';
 import { getSupabaseAdminClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
-export function AdminSidebarLayout({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
+function AdminSidebarContent({ children }: { children: React.ReactNode }) {
+  const { open } = useSidebar();
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -41,21 +41,21 @@ export function AdminSidebarLayout({ children }: { children: React.ReactNode }) 
       label: "Dashboard",
       href: "/admin/blog",
       icon: (
-        <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <LayoutDashboard className="h-5 w-5 flex-shrink-0 transition-all duration-200" />
       ),
     },
     {
       label: "Blog Posts",
       href: "/admin/blog",
       icon: (
-        <FileText className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <FileText className="h-5 w-5 flex-shrink-0 transition-all duration-200" />
       ),
     },
     {
       label: "View Site",
       href: "/",
       icon: (
-        <Home className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <Home className="h-5 w-5 flex-shrink-0 transition-all duration-200" />
       ),
     },
   ];
@@ -73,59 +73,106 @@ export function AdminSidebarLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
+    <>
+      <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        {open ? <AdminLogo /> : <AdminLogoIcon />}
+        <div className="mt-8 flex flex-col gap-1">
+          {links.map((link, idx) => {
+            const isActive = pathname === link.href || 
+              (link.href !== '/' && pathname?.startsWith(link.href));
+            return (
+              <SidebarLink 
+                key={idx} 
+                link={{
+                  ...link,
+                  icon: (
+                    <div className={cn(
+                      "rounded-lg transition-all duration-200 flex items-center justify-center",
+                      open ? "p-2" : "p-1.5",
+                      isActive 
+                        ? "bg-primary/10 text-primary dark:bg-primary/20" 
+                        : "text-neutral-600 dark:text-neutral-400 group-hover/sidebar:bg-neutral-200 dark:group-hover/sidebar:bg-neutral-700 group-hover/sidebar:text-neutral-900 dark:group-hover/sidebar:text-neutral-100"
+                    )}>
+                      {React.cloneElement(link.icon as React.ReactElement, {
+                        className: cn(
+                          open ? "h-5 w-5" : "h-4 w-4",
+                          isActive && "text-primary"
+                        )
+                      })}
+                    </div>
+                  )
+                }}
+                className={cn(
+                  "rounded-lg transition-all duration-200 flex items-center",
+                  open ? "px-2 py-1.5" : "px-0 py-1.5 justify-center",
+                  isActive && "bg-primary/5 dark:bg-primary/10"
+                )}
+              />
+            );
+          })}
+        </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        {user && (
+          <SidebarLink
+            link={{
+              label: getUserDisplayName(user.email),
+              href: "#",
+              icon: (
+                <div className={cn(
+                  "flex-shrink-0 rounded-full bg-gradient-to-br from-primary to-primary/80 text-primary-foreground flex items-center justify-center font-semibold shadow-sm ring-2 ring-primary/20 dark:ring-primary/30",
+                  open ? "h-8 w-8 text-sm" : "h-7 w-7 text-xs"
+                )}>
+                  {getUserInitial(user.email)}
+                </div>
+              ),
+            }}
+            className={cn(
+              "rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-200",
+              open ? "px-2 py-1.5" : "px-0 py-1.5 justify-center"
+            )}
+          />
+        )}
+        <button
+          onClick={handleLogout}
+          className={cn(
+            "flex items-center rounded-lg text-neutral-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all duration-200",
+            open ? "justify-start gap-2 px-2 py-1.5" : "justify-center px-0 py-1.5"
+          )}
+        >
+          <div className={cn(
+            "rounded-lg transition-all duration-200 flex items-center justify-center",
+            open ? "p-2" : "p-1.5",
+            "group-hover/sidebar:bg-red-100 dark:group-hover/sidebar:bg-red-900/30"
+          )}>
+            <LogOut className={cn(
+              "flex-shrink-0",
+              open ? "h-5 w-5" : "h-4 w-4"
+            )} />
+          </div>
+          <motion.span
+            animate={{
+              display: open ? "inline-block" : "none",
+              opacity: open ? 1 : 0,
+            }}
+            className="text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0 font-medium"
+          >
+            Logout
+          </motion.span>
+        </button>
+      </div>
+    </>
+  );
+}
+
+export function AdminSidebarLayout({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  
+  return (
     <div className="flex h-screen w-full bg-gray-100 dark:bg-neutral-800">
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            {open ? <AdminLogo /> : <AdminLogoIcon />}
-            <div className="mt-8 flex flex-col gap-2">
-              {links.map((link, idx) => {
-                const isActive = pathname === link.href || 
-                  (link.href !== '/' && pathname?.startsWith(link.href));
-                return (
-                  <SidebarLink 
-                    key={idx} 
-                    link={link}
-                    className={cn(
-                      isActive && "bg-neutral-200 dark:bg-neutral-700 rounded-md"
-                    )}
-                  />
-                );
-              })}
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            {user && (
-              <SidebarLink
-                link={{
-                  label: getUserDisplayName(user.email),
-                  href: "#",
-                  icon: (
-                    <div className="h-7 w-7 flex-shrink-0 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-                      {getUserInitial(user.email)}
-                    </div>
-                  ),
-                }}
-              />
-            )}
-            <button
-              onClick={handleLogout}
-              className={cn(
-                "flex items-center justify-start gap-2 group/sidebar py-2 text-neutral-700 dark:text-neutral-200 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-              )}
-            >
-              <LogOut className="h-5 w-5 flex-shrink-0" />
-              <motion.span
-                animate={{
-                  display: open ? "inline-block" : "none",
-                  opacity: open ? 1 : 0,
-                }}
-                className="text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
-              >
-                Logout
-              </motion.span>
-            </button>
-          </div>
+          <AdminSidebarContent>{children}</AdminSidebarContent>
         </SidebarBody>
       </Sidebar>
       <div className="flex flex-1 overflow-hidden">
@@ -141,13 +188,13 @@ export const AdminLogo = () => {
   return (
     <Link
       href="/admin/blog"
-      className="font-normal flex space-x-2 items-center text-sm text-black dark:text-white py-1 relative z-20"
+      className="font-normal flex space-x-3 items-center text-sm text-black dark:text-white py-2 relative z-20 group/logo transition-all duration-200 hover:opacity-80"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <div className="h-6 w-7 bg-gradient-to-br from-primary to-primary/80 dark:from-primary dark:to-primary/90 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0 shadow-sm ring-1 ring-primary/20 dark:ring-primary/30 transition-all duration-200 group-hover/logo:scale-105" />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="font-medium text-black dark:text-white whitespace-pre"
+        className="font-semibold text-black dark:text-white whitespace-pre text-base"
       >
         Admin Panel
       </motion.span>
@@ -159,9 +206,9 @@ export const AdminLogoIcon = () => {
   return (
     <Link
       href="/admin/blog"
-      className="font-normal flex space-x-2 items-center text-sm text-black dark:text-white py-1 relative z-20"
+      className="font-normal flex space-x-2 items-center text-sm text-black dark:text-white py-2 relative z-20 group/logo transition-all duration-200 hover:opacity-80"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <div className="h-6 w-7 bg-gradient-to-br from-primary to-primary/80 dark:from-primary dark:to-primary/90 rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0 shadow-sm ring-1 ring-primary/20 dark:ring-primary/30 transition-all duration-200 group-hover/logo:scale-105" />
     </Link>
   );
 };
