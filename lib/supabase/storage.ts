@@ -126,3 +126,37 @@ export function extractFilePathFromUrl(url: string): string | null {
     return null;
   }
 }
+
+export async function uploadFile(
+  file: File,
+  bucket: string,
+  accessToken: string
+): Promise<string> {
+  const supabase = getSupabaseAdminClient();
+  
+  // Generate unique filename
+  const timestamp = Date.now();
+  const randomString = Math.random().toString(36).substring(2, 15);
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${timestamp}-${randomString}.${fileExt}`;
+  const filePath = fileName;
+
+  // Upload file to Supabase Storage
+  const { data, error } = await supabase.storage
+    .from(bucket)
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false,
+    });
+
+  if (error) {
+    throw new Error(error.message || 'Failed to upload file');
+  }
+
+  // Get public URL
+  const { data: { publicUrl } } = supabase.storage
+    .from(bucket)
+    .getPublicUrl(filePath);
+
+  return publicUrl;
+}

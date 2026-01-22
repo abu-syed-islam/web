@@ -10,9 +10,10 @@ interface ImageUploadProps {
   currentImageUrl?: string | null;
   onImageChange: (url: string | null) => void;
   label?: string;
+  accept?: string;
 }
 
-export function ImageUpload({ currentImageUrl, onImageChange, label = "Featured Image" }: ImageUploadProps) {
+export function ImageUpload({ currentImageUrl, onImageChange, label = "Featured Image", accept }: ImageUploadProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(currentImageUrl || null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -169,7 +170,7 @@ export function ImageUpload({ currentImageUrl, onImageChange, label = "Featured 
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+        accept={accept}
         onChange={handleFileInput}
         className="hidden"
       />

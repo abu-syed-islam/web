@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 async function getHomeData() {
   const supabase = getSupabaseClient();
 
-  const [{ data: services }, { data: projects }] = await Promise.all([
+  const [{ data: services }, { data: projects }, { data: caseStudies }] = await Promise.all([
     supabase
       .from("services")
       .select("id,title,description,icon,created_at")
@@ -37,19 +37,24 @@ async function getHomeData() {
       .limit(3),
     supabase
       .from("projects")
-      .select("id,title,description,image_url,created_at")
+      .select("id,title,description,image_url,gif_url,created_at")
       .order("created_at", { ascending: false })
       .limit(3),
+    supabase
+      .from("case_studies")
+      .select("id,project_id,slug")
+      .eq("status", "published"),
   ]);
 
   return {
     services: services ?? [],
     projects: projects ?? [],
+    caseStudies: caseStudies ?? [],
   };
 }
 
 export default async function HomePage() {
-  const { services, projects } = await getHomeData();
+  const { services, projects, caseStudies } = await getHomeData();
 
   return (
     <>
@@ -57,7 +62,7 @@ export default async function HomePage() {
       <StatsSection />
       <ServicesPreview services={services as Service[]} showViewAll />
       <TechStackSection />
-      <ProjectsPreview projects={projects as Project[]} showViewAll />
+      <ProjectsPreview projects={projects as Project[]} caseStudies={caseStudies as any} showViewAll />
       <ClientLogosSection />
       <TestimonialsSection />
       <CTASection />

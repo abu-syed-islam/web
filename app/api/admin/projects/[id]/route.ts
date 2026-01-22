@@ -46,7 +46,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { title, description, category, image_url, tech_stack, live_url, github_url } = body;
+    const { title, description, category, image_url, gif_url, tech_stack, live_url, github_url } = body;
 
     if (!title || !description) {
       return NextResponse.json(
@@ -62,6 +62,7 @@ export async function PUT(
         description,
         category: category || null,
         image_url: image_url || null,
+        gif_url: gif_url || null,
         tech_stack: tech_stack || null,
         live_url: live_url || null,
         github_url: github_url || null,

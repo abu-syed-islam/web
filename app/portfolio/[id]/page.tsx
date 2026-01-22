@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ExternalLink, ImageOff } from 'lucide-react';
+import { ArrowLeft, ExternalLink, ImageOff, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSupabaseClient } from '@/lib/supabase/client';
@@ -19,16 +19,31 @@ async function getProject(id: string) {
   return data;
 }
 
+async function getCaseStudyForProject(projectId: string) {
+  const supabase = getSupabaseClient();
+  const { data } = await supabase
+    .from('case_studies')
+    .select('id, title, slug')
+    .eq('project_id', projectId)
+    .eq('status', 'published')
+    .single();
+
+  return data;
+}
+
 export default async function ProjectDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const project = await getProject(params.id);
+  const { id } = await params;
+  const project = await getProject(id);
 
   if (!project) {
     notFound();
   }
+
+  const caseStudy = project.id ? await getCaseStudyForProject(project.id) : null;
 
   // In a real app, you might have additional fields like:
   // tech_stack, challenges, solutions, gallery_images, live_url, etc.
@@ -68,16 +83,24 @@ export default async function ProjectDetailPage({
             )}
           </header>
 
-          {/* Featured Image */}
-          {project.image_url && (
+          {/* Featured Image or GIF */}
+          {(project.gif_url || project.image_url) && (
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl border bg-muted">
-              <Image
-                src={project.image_url}
-                alt={project.title}
-                fill
-                className="object-cover"
-                priority
-              />
+              {project.gif_url ? (
+                <img
+                  src={project.gif_url}
+                  alt={project.title}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Image
+                  src={project.image_url!}
+                  alt={project.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              )}
             </div>
           )}
 
@@ -195,8 +218,16 @@ export default async function ProjectDetailPage({
               </Card>
 
               <div className="flex flex-col gap-2">
-                {project.live_url && (
+                {caseStudy && (
                   <Button asChild variant="default" className="w-full" size="lg">
+                    <Link href={`/case-studies/${caseStudy.slug}`}>
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      View Case Study
+                    </Link>
+                  </Button>
+                )}
+                {project.live_url && (
+                  <Button asChild variant={caseStudy ? "outline" : "default"} className="w-full" size="lg">
                     <Link href={project.live_url} target="_blank" rel="noopener noreferrer">
                       View Live Site
                       <ExternalLink className="ml-2 h-4 w-4" />
@@ -211,7 +242,7 @@ export default async function ProjectDetailPage({
                     </Link>
                   </Button>
                 )}
-                <Button asChild variant={project.live_url || project.github_url ? "outline" : "default"} className="w-full" size="lg">
+                <Button asChild variant="outline" className="w-full" size="lg">
                   <Link href="/contact">
                     Start Your Project
                     <ExternalLink className="ml-2 h-4 w-4" />

@@ -28,6 +28,7 @@ export function ProjectForm({ project, isEdit = false }: ProjectFormProps) {
     description: project?.description || '',
     category: project?.category || '',
     image_url: project?.image_url || null,
+    gif_url: project?.gif_url || null,
     tech_stack: project?.tech_stack?.join(', ') || '',
     live_url: project?.live_url || '',
     github_url: project?.github_url || '',
@@ -42,6 +43,10 @@ export function ProjectForm({ project, isEdit = false }: ProjectFormProps) {
 
   const handleImageChange = (url: string | null) => {
     setFormData((prev) => ({ ...prev, image_url: url }));
+  };
+
+  const handleGifChange = (url: string | null) => {
+    setFormData((prev) => ({ ...prev, gif_url: url }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -156,6 +161,14 @@ export function ProjectForm({ project, isEdit = false }: ProjectFormProps) {
           <ImageUpload
             currentImageUrl={formData.image_url}
             onImageChange={handleImageChange}
+            label="Featured Image"
+          />
+
+          <ImageUpload
+            currentImageUrl={formData.gif_url}
+            onImageChange={handleGifChange}
+            label="GIF Preview (Website Preview)"
+            accept="image/gif"
           />
 
           <div className="space-y-2">

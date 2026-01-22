@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Sidebar, SidebarBody, SidebarLink, useSidebar } from '@/components/ui/sidebar';
-import { LayoutDashboard, FileText, Home, LogOut, Briefcase, Sparkles, Users, MessageSquare, Mail } from 'lucide-react';
+import { LayoutDashboard, FileText, Home, LogOut, Briefcase, Sparkles, Users, MessageSquare, Mail, Calendar, Video, FileDown, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -84,6 +84,34 @@ function AdminSidebarContent({ children }: { children: React.ReactNode }) {
       href: "/admin/leads",
       icon: (
         <Mail className="h-5 w-5 flex-shrink-0 transition-all duration-200" />
+      ),
+    },
+    {
+      label: "Bookings",
+      href: "/admin/bookings",
+      icon: (
+        <Calendar className="h-5 w-5 flex-shrink-0 transition-all duration-200" />
+      ),
+    },
+    {
+      label: "Case Studies",
+      href: "/admin/case-studies",
+      icon: (
+        <BookOpen className="h-5 w-5 flex-shrink-0 transition-all duration-200" />
+      ),
+    },
+    {
+      label: "Videos",
+      href: "/admin/videos",
+      icon: (
+        <Video className="h-5 w-5 flex-shrink-0 transition-all duration-200" />
+      ),
+    },
+    {
+      label: "Resources",
+      href: "/admin/resources",
+      icon: (
+        <FileDown className="h-5 w-5 flex-shrink-0 transition-all duration-200" />
       ),
     },
     {
